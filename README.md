@@ -224,7 +224,7 @@
     let selectedPaymentAmount = null;
     let selectedChangeAmount = null;
     let stars = 0;
-    let gameResult = null; // { correct: true/false, message: "" }
+    let gameResult = null;
 
     // ----------------- ฟังก์ชันคำนวณ -----------------
     function getTotal() {
@@ -237,13 +237,10 @@
     function generateChangeOptions(payment, total) {
       const correctChange = payment - total;
       const options = [correctChange];
-
       const diff1 = Math.floor(Math.random() * 15) + 5;
       const diff2 = Math.floor(Math.random() * 15) + 5;
-
       options.push(correctChange + diff1);
       options.push(correctChange - diff2);
-
       return options.sort(() => Math.random() - 0.5);
     }
 
@@ -357,17 +354,21 @@
         const isInOrder = orderItems.some(oi => oi.id === item.id);
         const price = item.price || item.basePrice;
 
+        const hasToppings = !!item.toppings;
+
         return `
           <div class="menu-item p-5 cursor-pointer mb-4 ${isInOrder ? "item-selected" : ""}"
                style="border: 2px solid ${isInOrder ? "#e74c3c" : "transparent"};"
-               onclick="toggleItem(${item.id})">
+               onclick="onMenuCardClick(${item.id})">
             <div class="flex items-start gap-4">
               <div class="text-center" style="flex-shrink:0;">
                 <div style="font-size: 2.4rem;" class="mb-1">${item.emoji}</div>
               </div>
               <div class="flex-grow">
                 <div class="flex justify-between items-start mb-2">
-                  <h3 class="font-semibold" style="font-size: 1.1rem;">${item.name}</h3>
+                  <h3 class="font-semibold" style="font-size: 1.1rem;">
+                    ${item.name}${hasToppings ? " (เลือกท็อปปิ้งได้)" : ""}
+                  </h3>
                   <span class="font-bold" style="font-size: 1rem; color:#e74c3c;">
                     ฿${price}${item.basePrice ? "+" : ""}
                   </span>
@@ -375,7 +376,7 @@
                 <p style="font-size: 0.9rem; color:#7f8c8d;" class="mb-3">
                   ${item.description}
                 </p>
-                ${item.toppings ? `
+                ${hasToppings ? `
                   <div id="toppings-${item.id}" class="hidden mt-3"
                        style="border-top:1px solid rgba(149,165,166,0.25); padding-top:0.75rem;">
                     <p class="font-semibold" style="font-size: 0.9rem;">เลือกท็อปปิ้ง:</p>
@@ -385,6 +386,10 @@
                         <span style="font-size: 0.9rem;">${topping.name} (+฿${topping.price})</span>
                       </label>
                     `).join("")}
+                    <button class="btn btn-primary mt-3"
+                            onclick="addPastaWithToppings(${item.id}); event.stopPropagation();">
+                      เพิ่มเมนูนี้
+                    </button>
                   </div>
                 ` : ""}
               </div>
@@ -535,20 +540,11 @@
     // ----------------- Event handlers -----------------
     window.selectCategory = function(category) {
       selectedCategory = category;
-      orderItems = orderItems; // no-op แค่กันงง
       renderApp();
     };
 
-    window.toggleItem = function(itemId) {
-      const existingIndex = orderItems.findIndex(oi => oi.id === itemId);
-
-      if (existingIndex >= 0) {
-        orderItems.splice(existingIndex, 1);
-        renderApp();
-        return;
-      }
-
-      // หาเมนู
+    // คลิกการ์ดเมนู
+    window.onMenuCardClick = function(itemId) {
       let item;
       for (const cat in menuData) {
         const found = menuData[cat].find(i => i.id === itemId);
@@ -559,40 +555,59 @@
       }
       if (!item) return;
 
+      // ถ้ามีพวกท็อปปิ้ง → แค่เปิด/ปิดส่วนเลือกท็อปปิ้ง
       if (item.toppings) {
-        const toppingsDiv = document.getElementById(`toppings-${itemId}`);
-        // ถ้ายังไม่เปิด เลือกให้เปิดก่อน
-        if (toppingsDiv && toppingsDiv.classList.contains("hidden")) {
-          toppingsDiv.classList.remove("hidden");
-          return;
+        const div = document.getElementById(`toppings-${item.id}`);
+        if (div) {
+          div.classList.toggle("hidden");
         }
+        return;
+      }
 
-        // ถ้าเปิดแล้ว แสดงว่าเป็นรอบที่ 2: เก็บท็อปปิ้ง แล้วเพิ่มออเดอร์
-        const selectedToppings = [];
-        item.toppings.forEach((topping, idx) => {
-          const checkbox = document.getElementById(`topping-${item.id}-${idx}`);
-          if (checkbox && checkbox.checked) {
-            selectedToppings.push(topping);
-          }
-        });
-        const totalPrice = item.basePrice + selectedToppings.reduce((sum, t) => sum + t.price, 0);
-
-        orderItems.push({
-          id: item.id,
-          name: item.name,
-          selectedToppings,
-          totalPrice
-        });
-        renderApp();
+      // ถ้าเป็นเมนูธรรมดา → toggle เข้า/ออกออเดอร์
+      const existingIndex = orderItems.findIndex(oi => oi.id === itemId);
+      if (existingIndex >= 0) {
+        orderItems.splice(existingIndex, 1);
       } else {
-        // เมนูธรรมดา
         orderItems.push({
           id: item.id,
           name: item.name,
           totalPrice: item.price
         });
-        renderApp();
       }
+      renderApp();
+    };
+
+    // เพิ่มพาสต้าพร้อมท็อปปิ้ง
+    window.addPastaWithToppings = function(itemId) {
+      let item;
+      for (const cat in menuData) {
+        const found = menuData[cat].find(i => i.id === itemId);
+        if (found) {
+          item = found;
+          break;
+        }
+      }
+      if (!item || !item.toppings) return;
+
+      const selectedToppings = [];
+      item.toppings.forEach((topping, idx) => {
+        const checkbox = document.getElementById(`topping-${item.id}-${idx}`);
+        if (checkbox && checkbox.checked) {
+          selectedToppings.push(topping);
+        }
+      });
+
+      const totalPrice = item.basePrice + selectedToppings.reduce((sum, t) => sum + t.price, 0);
+
+      orderItems.push({
+        id: item.id,
+        name: item.name,
+        selectedToppings,
+        totalPrice
+      });
+
+      renderApp();
     };
 
     window.removeItem = function(itemId) {
