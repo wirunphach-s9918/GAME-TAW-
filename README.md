@@ -2,9 +2,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>เกมร้านอาหาร Taw Cucina & เกมคำนวณเงินทอน</title>
+  <title>Taw Cucina – เกมร้านอาหาร & เกมคำนวณเงินทอน</title>
 
-  <!-- สไตล์พื้นฐาน -->
   <style>
     * {
       box-sizing: border-box;
@@ -19,11 +18,8 @@
       color: #2c3e50;
     }
 
-    /* utility เล็ก ๆ แทน tailwind */
     .w-full { width: 100%; }
     .h-full { height: 100%; }
-    .max-w-md { max-width: 480px; }
-    .inline-block { display: inline-block; }
     .text-center { text-align: center; }
     .text-right { text-align: right; }
     .font-bold { font-weight: 700; }
@@ -65,61 +61,6 @@
     .cursor-pointer { cursor: pointer; }
     .hidden { display: none; }
 
-    .category-card {
-      transition: all 0.3s ease;
-      border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-      border: 2px solid transparent;
-      background-color: #ffffff;
-    }
-
-    .category-card:hover {
-      transform: translateY(-4px);
-    }
-
-    .menu-item {
-      transition: all 0.2s ease;
-      border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-      background-color: #ffffff;
-    }
-
-    .menu-item:hover {
-      transform: scale(1.02);
-    }
-
-    .item-selected {
-      border-width: 3px !important;
-    }
-
-    .fade-in {
-      animation: fadeIn 0.3s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .order-summary {
-      position: sticky;
-      top: 20px;
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 1000;
-    }
-
     .page-container {
       width: 100%;
       min-height: 100vh;
@@ -154,6 +95,38 @@
       }
     }
 
+    .category-card {
+      transition: all 0.3s ease;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      border: 2px solid transparent;
+      background-color: #ffffff;
+    }
+
+    .category-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .menu-item {
+      transition: all 0.2s ease;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      background-color: #ffffff;
+    }
+
+    .menu-item:hover {
+      transform: scale(1.02);
+    }
+
+    .item-selected {
+      border-width: 3px !important;
+    }
+
+    .order-summary {
+      position: sticky;
+      top: 20px;
+    }
+
     .btn {
       border: none;
       cursor: pointer;
@@ -171,37 +144,37 @@
       background-color: rgba(149,165,166,0.2);
       color: #2c3e50;
     }
-  </style>
 
-  <style>@view-transition { navigation: auto; }</style>
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body class="w-full h-full">
   <div id="app" class="w-full h-full"></div>
 
   <script>
-    const defaultConfig = {
-      restaurant_name: "Taw Cucina",
-      tagline: "สร้างออเดอร์ของคุณเอง",
-      category_1: "อาหารเรียกน้ำย่อย",
-      category_2: "พาสต้า",
-      category_3: "ของหวาน",
-      background_color: "#f8f9fa",
-      surface_color: "#ffffff",
-      text_color: "#2c3e50",
-      primary_action_color: "#e74c3c",
-      secondary_action_color: "#95a5a6",
-      font_family: "Inter",
-      font_size: 16
-    };
-
-    let config = {};
-    let selectedCategory = null;
-    let orderItems = [];
-    let showPaymentGame = false;
-    let selectedPaymentAmount = null;
-    let selectedChangeAmount = null;
-    let stars = 0;
-    let gameResult = null;
+    // ----------------- ข้อมูลเมนู -----------------
+    const restaurantName = "Taw Cucina";
+    const tagline = "สร้างออเดอร์ของคุณเอง";
 
     const menuData = {
       "อาหารเรียกน้ำย่อย": [
@@ -244,6 +217,16 @@
       ]
     };
 
+    // ----------------- ตัวแปรสถานะ -----------------
+    let selectedCategory = null;
+    let orderItems = [];
+    let showPaymentGame = false;
+    let selectedPaymentAmount = null;
+    let selectedChangeAmount = null;
+    let stars = 0;
+    let gameResult = null; // { correct: true/false, message: "" }
+
+    // ----------------- ฟังก์ชันคำนวณ -----------------
     function getTotal() {
       const subtotal = orderItems.reduce((sum, item) => sum + item.totalPrice, 0);
       const tax = subtotal * 0.08;
@@ -254,115 +237,72 @@
     function generateChangeOptions(payment, total) {
       const correctChange = payment - total;
       const options = [correctChange];
+
       const diff1 = Math.floor(Math.random() * 15) + 5;
       const diff2 = Math.floor(Math.random() * 15) + 5;
+
       options.push(correctChange + diff1);
       options.push(correctChange - diff2);
+
       return options.sort(() => Math.random() - 0.5);
     }
 
+    // ----------------- เรนเดอร์หน้าเว็บหลัก -----------------
     function renderApp() {
-      const app = document.getElementById('app');
-      const customFont = config.font_family || defaultConfig.font_family;
-      const baseSize = config.font_size || defaultConfig.font_size;
-
-      const bgColor = config.background_color || defaultConfig.background_color;
-      const surfaceColor = config.surface_color || defaultConfig.surface_color;
-      const textColor = config.text_color || defaultConfig.text_color;
-      const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
-      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
-
-      const categoryKey1 = config.category_1 || defaultConfig.category_1;
-      const categoryKey2 = config.category_2 || defaultConfig.category_2;
-      const categoryKey3 = config.category_3 || defaultConfig.category_3;
-
+      const app = document.getElementById("app");
       const { subtotal, tax, total } = getTotal();
-
-      app.style.fontFamily = `${customFont}, system-ui, -apple-system, sans-serif`;
-      app.style.backgroundColor = bgColor;
-      app.style.color = textColor;
 
       app.innerHTML = `
         <div class="page-container">
-          <!-- Header -->
           <header class="text-center mb-8">
-            <h1 class="font-bold mb-2" style="font-size: ${baseSize * 2.2}px; color: ${textColor}">
-              ${config.restaurant_name || defaultConfig.restaurant_name}
-            </h1>
-            <p class="mb-1" style="font-size: ${baseSize * 1.2}px; color: ${secondaryColor}">
-              ${config.tagline || defaultConfig.tagline}
-            </p>
-            <div class="inline-block px-4 py-1 rounded-full mt-2" 
-                 style="background-color: ${primaryColor}20; color: ${primaryColor}; font-size: ${baseSize * 0.9}px;">
+            <h1 class="font-bold mb-2" style="font-size: 2.2rem;">${restaurantName}</h1>
+            <p class="mb-1" style="font-size: 1.1rem; color: #7f8c8d;">${tagline}</p>
+            <div class="inline-block px-4 py-1 rounded-full mt-2"
+                 style="background-color: rgba(231,76,60,0.12); color: #e74c3c; font-size: 0.9rem;">
               ออนไลน์ • พร้อมรับออเดอร์
             </div>
           </header>
 
           <div class="max-width">
             <div class="grid grid-3">
-              <!-- Menu Section -->
+              <!-- ส่วนเมนู -->
               <div>
-                <!-- Category Selection -->
-                <div class="grid grid-3-cols mb-8 gap-4">
-                  <button onclick="selectCategory('${categoryKey1}')" 
-                          class="category-card p-6 text-center cursor-pointer"
-                          style="border-color: ${selectedCategory === categoryKey1 ? primaryColor : 'transparent'}">
-                    <div style="font-size: ${baseSize * 3}px;" class="mb-2">🍴</div>
-                    <h3 class="font-semibold" style="font-size: ${baseSize * 1.1}px; color: ${textColor}">${categoryKey1}</h3>
-                    <p style="font-size: ${baseSize * 0.85}px; color: ${secondaryColor}">฿8-12</p>
-                  </button>
-                  
-                  <button onclick="selectCategory('${categoryKey2}')" 
-                          class="category-card p-6 text-center cursor-pointer"
-                          style="border-color: ${selectedCategory === categoryKey2 ? primaryColor : 'transparent'}">
-                    <div style="font-size: ${baseSize * 3}px;" class="mb-2">🍝</div>
-                    <h3 class="font-semibold" style="font-size: ${baseSize * 1.1}px; color: ${textColor}">${categoryKey2}</h3>
-                    <p style="font-size: ${baseSize * 0.85}px; color: ${secondaryColor}">฿14-18</p>
-                  </button>
-                  
-                  <button onclick="selectCategory('${categoryKey3}')" 
-                          class="category-card p-6 text-center cursor-pointer"
-                          style="border-color: ${selectedCategory === categoryKey3 ? primaryColor : 'transparent'}">
-                    <div style="font-size: ${baseSize * 3}px;" class="mb-2">🍰</div>
-                    <h3 class="font-semibold" style="font-size: ${baseSize * 1.1}px; color: ${textColor}">${categoryKey3}</h3>
-                    <p style="font-size: ${baseSize * 0.85}px; color: ${secondaryColor}">฿6-9</p>
-                  </button>
+                <div class="grid grid-3-cols mb-8">
+                  ${renderCategoryButtons()}
                 </div>
-
-                <!-- Menu Items -->
                 <div id="menuItems"></div>
               </div>
 
-              <!-- Order Summary -->
+              <!-- สรุปออเดอร์ -->
               <div>
-                <div class="order-summary shadow-lg p-6" style="background-color: ${surfaceColor}; border-radius: 16px;">
-                  <h2 class="font-bold mb-4" style="font-size: ${baseSize * 1.5}px; color: ${textColor}">ออเดอร์ของคุณ</h2>
+                <div class="order-summary shadow-lg p-6" style="background-color: #ffffff; border-radius: 16px;">
+                  <h2 class="font-bold mb-4" style="font-size: 1.4rem;">ออเดอร์ของคุณ</h2>
                   <div id="orderList" class="mb-6 min-h-32"></div>
                   <div class="border-top pt-4">
                     <div class="flex justify-between items-center mb-2">
-                      <span style="font-size: ${baseSize}px; color: ${secondaryColor}">รวมย่อย</span>
-                      <span class="font-semibold" style="font-size: ${baseSize}px; color: ${textColor}">฿${subtotal.toFixed(2)}</span>
+                      <span style="font-size: 1rem; color: #7f8c8d;">รวมย่อย</span>
+                      <span class="font-semibold" style="font-size: 1rem;">฿${subtotal.toFixed(2)}</span>
                     </div>
                     <div class="flex justify-between items-center mb-2">
-                      <span style="font-size: ${baseSize}px; color: ${secondaryColor}">ภาษี (8%)</span>
-                      <span class="font-semibold" style="font-size: ${baseSize}px; color: ${textColor}">฿${tax.toFixed(2)}</span>
+                      <span style="font-size: 1rem; color: #7f8c8d;">ภาษี (8%)</span>
+                      <span class="font-semibold" style="font-size: 1rem;">฿${tax.toFixed(2)}</span>
                     </div>
                     <div class="flex justify-between items-center pt-2 border-top">
-                      <span class="font-bold" style="font-size: ${baseSize * 1.2}px; color: ${textColor}">รวมทั้งหมด</span>
-                      <span class="font-bold" style="font-size: ${baseSize * 1.2}px; color: ${primaryColor}">฿${total.toFixed(2)}</span>
+                      <span class="font-bold" style="font-size: 1.1rem;">รวมทั้งหมด</span>
+                      <span class="font-bold" style="font-size: 1.1rem; color: #e74c3c;">฿${total.toFixed(2)}</span>
                     </div>
+
                     ${orderItems.length > 0 ? `
-                      <button onclick="startPaymentGame()" 
-                              class="btn btn-primary w-full mt-4"
-                              style="font-size: ${baseSize}px;">
+                      <button class="btn btn-primary w-full mt-4" onclick="startPaymentGame()">
                         💰 ฝึกคำนวณเงินทอน
                       </button>
                       ${stars > 0 ? `
-                        <div class="text-center mt-3 py-2" style="background-color: #ffd70020; border-radius: 8px; font-size: ${baseSize}px; color: ${textColor}">
+                        <div class="text-center mt-3 py-2"
+                             style="background-color: rgba(255,215,0,0.2); border-radius: 8px;">
                           ⭐ คุณได้ ${stars} ดาวแล้ว!
                         </div>
-                      ` : ''}
-                    ` : ''}
+                      ` : ``}
+                    ` : ``}
                   </div>
                 </div>
               </div>
@@ -373,27 +313,39 @@
 
       renderMenuItems();
       renderOrderList();
-
       if (showPaymentGame) {
         renderPaymentModal();
       }
     }
 
-    function renderMenuItems() {
-      const menuItems = document.getElementById('menuItems');
-      if (!menuItems) return;
+    function renderCategoryButtons() {
+      const categories = [
+        { key: "อาหารเรียกน้ำย่อย", emoji: "🍴", range: "฿8-12" },
+        { key: "พาสต้า",          emoji: "🍝", range: "฿14-18" },
+        { key: "ของหวาน",        emoji: "🍰", range: "฿6-9" }
+      ];
 
-      const baseSize = config.font_size || defaultConfig.font_size;
-      const surfaceColor = config.surface_color || defaultConfig.surface_color;
-      const textColor = config.text_color || defaultConfig.text_color;
-      const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
-      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+      return categories.map(cat => `
+        <button class="category-card p-6 text-center cursor-pointer"
+                style="margin: 0.25rem; border-color: ${selectedCategory === cat.key ? "#e74c3c" : "transparent"};"
+                onclick="selectCategory('${cat.key}')">
+          <div style="font-size: 2.4rem;" class="mb-2">${cat.emoji}</div>
+          <h3 class="font-semibold" style="font-size: 1rem;">${cat.key}</h3>
+          <p style="font-size: 0.85rem; color: #7f8c8d;">${cat.range}</p>
+        </button>
+      `).join("");
+    }
+
+    // ----------------- เรนเดอร์เมนู -----------------
+    function renderMenuItems() {
+      const container = document.getElementById("menuItems");
+      if (!container) return;
 
       if (!selectedCategory) {
-        menuItems.innerHTML = `
-          <div class="text-center py-8" style="color: ${secondaryColor}">
-            <div style="font-size: ${baseSize * 4}px;" class="mb-4">👆</div>
-            <p style="font-size: ${baseSize * 1.1}px;">เลือกหมวดหมู่เพื่อดูเมนู</p>
+        container.innerHTML = `
+          <div class="text-center py-8" style="color: #7f8c8d;">
+            <div style="font-size: 3rem;" class="mb-4">👆</div>
+            <p style="font-size: 1.1rem;">เลือกหมวดหมู่เพื่อดูเมนู</p>
           </div>
         `;
         return;
@@ -401,263 +353,244 @@
 
       const items = menuData[selectedCategory] || [];
 
-      menuItems.innerHTML = items.map(item => {
+      container.innerHTML = items.map(item => {
         const isInOrder = orderItems.some(oi => oi.id === item.id);
+        const price = item.price || item.basePrice;
+
         return `
-          <div class="menu-item p-5 cursor-pointer mb-4 ${isInOrder ? 'item-selected' : ''}" 
-               style="border: 2px solid ${isInOrder ? primaryColor : 'transparent'}; background-color: ${surfaceColor};">
+          <div class="menu-item p-5 cursor-pointer mb-4 ${isInOrder ? "item-selected" : ""}"
+               style="border: 2px solid ${isInOrder ? "#e74c3c" : "transparent"};"
+               onclick="toggleItem(${item.id})">
             <div class="flex items-start gap-4">
               <div class="text-center" style="flex-shrink:0;">
-                <div style="font-size: ${baseSize * 3.5}px;" class="mb-1">${item.emoji}</div>
+                <div style="font-size: 2.4rem;" class="mb-1">${item.emoji}</div>
               </div>
               <div class="flex-grow">
                 <div class="flex justify-between items-start mb-2">
-                  <h3 class="font-semibold" style="font-size: ${baseSize * 1.2}px; color: ${textColor}">${item.name}</h3>
-                  <span class="font-bold" style="font-size: ${baseSize * 1.1}px; color: ${primaryColor}">
-                    ฿${item.price || item.basePrice}${item.basePrice ? '+' : ''}
+                  <h3 class="font-semibold" style="font-size: 1.1rem;">${item.name}</h3>
+                  <span class="font-bold" style="font-size: 1rem; color:#e74c3c;">
+                    ฿${price}${item.basePrice ? "+" : ""}
                   </span>
                 </div>
-                <p style="font-size: ${baseSize * 0.9}px; color: ${secondaryColor}" class="mb-3">
+                <p style="font-size: 0.9rem; color:#7f8c8d;" class="mb-3">
                   ${item.description}
                 </p>
                 ${item.toppings ? `
-                  <div id="toppings-${item.id}" class="hidden mt-3" 
-                       style="border-top:1px solid ${secondaryColor}40; padding-top:0.75rem;">
-                    <p class="font-semibold" style="font-size: ${baseSize * 0.9}px; color: ${textColor}">เลือกท็อปปิ้ง:</p>
+                  <div id="toppings-${item.id}" class="hidden mt-3"
+                       style="border-top:1px solid rgba(149,165,166,0.25); padding-top:0.75rem;">
+                    <p class="font-semibold" style="font-size: 0.9rem;">เลือกท็อปปิ้ง:</p>
                     ${item.toppings.map((topping, idx) => `
                       <label class="flex items-center gap-2 cursor-pointer" onclick="event.stopPropagation()">
-                        <input type="checkbox" 
-                               id="topping-${item.id}-${idx}"
-                               class="w-4 h-4 cursor-pointer">
-                        <span style="font-size: ${baseSize * 0.9}px; color: ${textColor}">${topping.name} (+฿${topping.price})</span>
+                        <input type="checkbox" id="topping-${item.id}-${idx}">
+                        <span style="font-size: 0.9rem;">${topping.name} (+฿${topping.price})</span>
                       </label>
-                    `).join('')}
+                    `).join("")}
                   </div>
-                ` : ''}
+                ` : ""}
               </div>
             </div>
           </div>
         `;
-      }).join('');
+      }).join("");
     }
 
+    // ----------------- เรนเดอร์ออเดอร์ -----------------
     function renderOrderList() {
-      const orderList = document.getElementById('orderList');
-      if (!orderList) return;
-
-      const baseSize = config.font_size || defaultConfig.font_size;
-      const textColor = config.text_color || defaultConfig.text_color;
-      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+      const container = document.getElementById("orderList");
+      if (!container) return;
 
       if (orderItems.length === 0) {
-        orderList.innerHTML = `
-          <div class="text-center py-4" style="color: ${secondaryColor}">
-            <p style="font-size: ${baseSize * 0.9}px;">ออเดอร์ของคุณว่างเปล่า</p>
+        container.innerHTML = `
+          <div class="text-center py-4" style="color: #7f8c8d;">
+            <p style="font-size: 0.9rem;">ออเดอร์ของคุณว่างเปล่า</p>
           </div>
         `;
-      } else {
-        orderList.innerHTML = orderItems.map(item => {
-          const toppingsText = item.selectedToppings && item.selectedToppings.length > 0
-            ? `<div style="font-size: ${baseSize * 0.75}px; color: ${secondaryColor}" class="mt-1">
-                 ${item.selectedToppings.map(t => `• ${t.name} +฿${t.price}`).join('<br>')}
-               </div>`
-            : '';
-
-          return `
-            <div class="flex justify-between items-start gap-2 pb-3 border-bottom">
-              <div class="flex-grow">
-                <div style="font-size: ${baseSize * 0.95}px; color: ${textColor}" class="font-medium">${item.name}</div>
-                ${toppingsText}
-              </div>
-              <div class="text-right" style="flex-shrink:0;">
-                <div style="font-size: ${baseSize * 0.95}px; color: ${textColor}" class="font-semibold">฿${item.totalPrice.toFixed(2)}</div>
-                <button onclick="removeItem(${item.id})" 
-                        class="mt-1 px-2 py-1 btn-secondary" 
-                        style="border-radius:6px; font-size: ${baseSize * 0.75}px; border:none;">
-                  ลบ
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('');
+        return;
       }
+
+      container.innerHTML = orderItems.map(item => {
+        const toppingsText = item.selectedToppings && item.selectedToppings.length > 0
+          ? `<div style="font-size: 0.75rem; color:#7f8c8d;" class="mt-1">
+               ${item.selectedToppings.map(t => `• ${t.name} +฿${t.price}`).join("<br>")}
+             </div>`
+          : "";
+
+        return `
+          <div class="flex justify-between items-start gap-2 pb-3 border-bottom">
+            <div class="flex-grow">
+              <div style="font-size: 0.95rem;" class="font-semibold">${item.name}</div>
+              ${toppingsText}
+            </div>
+            <div class="text-right" style="flex-shrink:0;">
+              <div style="font-size: 0.95rem;" class="font-semibold">฿${item.totalPrice.toFixed(2)}</div>
+              <button class="mt-1 px-2 py-1 btn-secondary"
+                      style="border-radius:6px; font-size: 0.75rem;"
+                      onclick="removeItem(${item.id})">
+                ลบ
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
+    // ----------------- Modal เกมเงินทอน -----------------
     function renderPaymentModal() {
-      const baseSize = config.font_size || defaultConfig.font_size;
-      const surfaceColor = config.surface_color || defaultConfig.surface_color;
-      const textColor = config.text_color || defaultConfig.text_color;
-      const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
-      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
-
       const { total } = getTotal();
-
-      const modalDiv = document.createElement('div');
-      modalDiv.className = 'modal-backdrop';
-      modalDiv.id = 'paymentModal';
+      const modal = document.createElement("div");
+      modal.className = "modal-backdrop";
+      modal.id = "paymentModal";
 
       let changeOptions = [];
-      if (selectedPaymentAmount) {
+      if (selectedPaymentAmount !== null) {
         changeOptions = generateChangeOptions(selectedPaymentAmount, total);
       }
 
-      modalDiv.innerHTML = `
-        <div class="shadow-lg p-8 max-w-md w-full fade-in" 
-             style="background-color: ${surfaceColor}; border-radius: 16px; max-height: 90%; overflow-y: auto;">
+      modal.innerHTML = `
+        <div class="shadow-lg p-8 max-w-md w-full fade-in"
+             style="background-color:#ffffff; border-radius:16px; max-height:90%; overflow-y:auto;">
           <div class="text-center mb-6">
-            <h2 class="font-bold mb-2" style="font-size: ${baseSize * 1.8}px; color: ${textColor}">
-              🎮 เกมคำนวณเงินทอน
-            </h2>
-            <p style="font-size: ${baseSize}px; color: ${secondaryColor}">
-              เลือกธนบัตรที่จ่าย และคำนวณเงินทอน
-            </p>
+            <h2 class="font-bold mb-2" style="font-size: 1.4rem;">🎮 เกมคำนวณเงินทอน</h2>
+            <p style="font-size: 1rem; color:#7f8c8d;">เลือกธนบัตรที่จ่าย และเงินทอนที่ถูกต้อง</p>
           </div>
-          
-          <div class="mb-6 p-4 text-center" 
-               style="background-color: ${primaryColor}20; border-radius: 12px;">
-            <p style="font-size: ${baseSize * 0.9}px; color: ${secondaryColor}">
-              ยอดที่ต้องจ่าย
-            </p>
-            <p class="font-bold" style="font-size: ${baseSize * 2}px; color: ${primaryColor}">
+
+          <div class="mb-6 p-4 text-center"
+               style="background-color: rgba(231,76,60,0.12); border-radius:12px;">
+            <p style="font-size: 0.9rem; color:#7f8c8d;">ยอดที่ต้องจ่าย</p>
+            <p class="font-bold" style="font-size: 1.8rem; color:#e74c3c;">
               ฿${total.toFixed(2)}
             </p>
           </div>
-          
+
           <div class="mb-6">
-            <p class="font-semibold mb-3" style="font-size: ${baseSize}px; color: ${textColor}">1️⃣ เลือกธนบัตรที่จ่าย:</p>
-            <div class="grid gap-3" style="grid-template-columns: repeat(3, minmax(0,1fr));">
+            <p class="font-semibold mb-3">1️⃣ เลือกธนบัตรที่จ่าย:</p>
+            <div class="grid" style="grid-template-columns: repeat(3, minmax(0,1fr)); gap:0.75rem;">
               ${[20, 50, 100, 500, 1000].map(amount => `
-                <button onclick="selectPayment(${amount})" 
-                        class="py-3 px-2 rounded-lg font-bold"
+                <button class="py-3 px-2 rounded-lg font-bold"
                         style="
-                          background-color: ${selectedPaymentAmount === amount ? primaryColor : secondaryColor + '40'}; 
-                          color: ${selectedPaymentAmount === amount ? 'white' : textColor}; 
-                          border: 2px solid ${selectedPaymentAmount === amount ? primaryColor : 'transparent'};
-                          font-size: ${baseSize * 0.95}px;
+                          background-color: ${selectedPaymentAmount === amount ? '#e74c3c' : 'rgba(149,165,166,0.2)'};
+                          color: ${selectedPaymentAmount === amount ? '#ffffff' : '#2c3e50'};
+                          border: 2px solid ${selectedPaymentAmount === amount ? '#e74c3c' : 'transparent'};
                           cursor:pointer;
-                        ">
+                        "
+                        onclick="selectPayment(${amount})">
                   ฿${amount}
                 </button>
-              `).join('')}
+              `).join("")}
             </div>
           </div>
-          
-          ${selectedPaymentAmount ? `
+
+          ${selectedPaymentAmount !== null ? `
             <div class="mb-6">
-              <p class="font-semibold mb-3" style="font-size: ${baseSize}px; color: ${textColor}">2️⃣ เงินทอนที่ถูกต้องคือ:</p>
-              <div class="grid gap-3" style="grid-template-columns: repeat(3, minmax(0,1fr));">
+              <p class="font-semibold mb-3">2️⃣ เงินทอนที่ถูกต้องคือ:</p>
+              <div class="grid" style="grid-template-columns: repeat(3, minmax(0,1fr)); gap:0.75rem;">
                 ${changeOptions.map(amount => `
-                  <button onclick="selectChange(${amount})" 
-                          class="py-3 px-2 rounded-lg font-bold"
+                  <button class="py-3 px-2 rounded-lg font-bold"
                           style="
-                            background-color: ${selectedChangeAmount === amount ? primaryColor : secondaryColor + '40'}; 
-                            color: ${selectedChangeAmount === amount ? 'white' : textColor}; 
-                            border: 2px solid ${selectedChangeAmount === amount ? primaryColor : 'transparent'};
-                            font-size: ${baseSize * 0.95}px;
+                            background-color: ${selectedChangeAmount === amount ? '#e74c3c' : 'rgba(149,165,166,0.2)'};
+                            color: ${selectedChangeAmount === amount ? '#ffffff' : '#2c3e50'};
+                            border: 2px solid ${selectedChangeAmount === amount ? '#e74c3c' : 'transparent'};
                             cursor:pointer;
-                          ">
+                          "
+                          onclick="selectChange(${amount})">
                     ฿${amount.toFixed(2)}
                   </button>
-                `).join('')}
+                `).join("")}
               </div>
             </div>
-          ` : ''}
-          
-          ${selectedPaymentAmount && selectedChangeAmount !== null && !gameResult ? `
-            <button onclick="checkAnswer()" 
-                    class="btn btn-primary w-full mb-3"
-                    style="font-size: ${baseSize}px;">
+          ` : ""}
+
+          ${selectedPaymentAmount !== null && selectedChangeAmount !== null && !gameResult ? `
+            <button class="btn btn-primary w-full mb-3" onclick="checkAnswer()">
               ✓ ตรวจคำตอบ
             </button>
-          ` : ''}
-          
+          ` : ""}
+
           ${gameResult ? `
-            <div class="text-center p-4 mb-4 fade-in" 
-                 style="background-color: ${gameResult.correct ? '#4caf5020' : '#f4433620'}; 
-                        border: 2px solid ${gameResult.correct ? '#4caf50' : '#f44336'};
-                        border-radius: 12px;">
-              <div style="font-size: ${baseSize * 3}px;">${gameResult.correct ? '⭐' : '❌'}</div>
-              <p class="font-bold mt-2" style="font-size: ${baseSize * 1.2}px; color: ${gameResult.correct ? '#4caf50' : '#f44336'};">
-                ${gameResult.correct ? 'ถูกต้อง! คุณได้ 1 ดาว' : 'ผิดนะ! ลองใหม่อีกครั้ง'}
+            <div class="text-center p-4 mb-4 fade-in"
+                 style="background-color:${gameResult.correct ? 'rgba(76,175,80,0.12)' : 'rgba(244,67,54,0.12)'};
+                        border:2px solid ${gameResult.correct ? '#4caf50' : '#f44336'};
+                        border-radius:12px;">
+              <div style="font-size: 2.4rem;">${gameResult.correct ? "⭐" : "❌"}</div>
+              <p class="font-bold mt-2" style="font-size: 1.1rem; color:${gameResult.correct ? '#4caf50' : '#f44336'};">
+                ${gameResult.correct ? "ถูกต้อง! คุณได้ 1 ดาว" : "ผิดนะ! ลองใหม่อีกครั้ง"}
               </p>
-              <p style="font-size: ${baseSize}px; color: ${secondaryColor}; margin-top: 8px;">
+              <p style="font-size: 0.95rem; color:#7f8c8d; margin-top: 8px;">
                 ${gameResult.message}
               </p>
             </div>
-          ` : ''}
-          
-          <button onclick="closePaymentGame()" 
-                  class="btn w-full"
-                  style="background-color: ${secondaryColor}40; color: ${textColor}; font-size: ${baseSize * 0.9}px;">
-            ${gameResult && gameResult.correct ? 'เริ่มเกมใหม่' : 'ปิด'}
+          ` : ""}
+
+          <button class="btn w-full"
+                  style="background-color: rgba(149,165,166,0.2);"
+                  onclick="closePaymentGame()">
+            ${gameResult && gameResult.correct ? "เริ่มเกมใหม่" : "ปิด"}
           </button>
         </div>
       `;
 
-      document.body.appendChild(modalDiv);
+      document.body.appendChild(modal);
     }
 
+    // ----------------- Event handlers -----------------
     window.selectCategory = function(category) {
       selectedCategory = category;
-      // ซ่อน toppings ทุกอันเมื่อเปลี่ยนหมวด
-      Object.keys(menuData).forEach(cat => {
-        menuData[cat].forEach(item => {
-          const el = document.getElementById(`toppings-${item.id}`);
-          if (el) el.classList.add('hidden');
-        });
-      });
+      orderItems = orderItems; // no-op แค่กันงง
       renderApp();
     };
 
     window.toggleItem = function(itemId) {
-      const existingItemIndex = orderItems.findIndex(oi => oi.id === itemId);
+      const existingIndex = orderItems.findIndex(oi => oi.id === itemId);
 
-      if (existingItemIndex >= 0) {
-        orderItems.splice(existingItemIndex, 1);
+      if (existingIndex >= 0) {
+        orderItems.splice(existingIndex, 1);
         renderApp();
         return;
       }
 
+      // หาเมนู
       let item;
-      for (const category in menuData) {
-        item = menuData[category].find(i => i.id === itemId);
-        if (item) break;
+      for (const cat in menuData) {
+        const found = menuData[cat].find(i => i.id === itemId);
+        if (found) {
+          item = found;
+          break;
+        }
       }
-
       if (!item) return;
 
       if (item.toppings) {
-        const toppingsDiv = document.getElementById(`toppings-${item.id}`);
-        if (toppingsDiv && toppingsDiv.classList.contains('hidden')) {
-          toppingsDiv.classList.remove('hidden');
-        } else if (toppingsDiv) {
-          const selectedToppings = [];
-          item.toppings.forEach((topping, idx) => {
-            const checkbox = document.getElementById(`topping-${item.id}-${idx}`);
-            if (checkbox && checkbox.checked) {
-              selectedToppings.push(topping);
-            }
-          });
-
-          const totalPrice = item.basePrice + selectedToppings.reduce((sum, t) => sum + t.price, 0);
-
-          orderItems.push({
-            id: item.id,
-            name: item.name,
-            basePrice: item.basePrice,
-            selectedToppings: selectedToppings,
-            totalPrice: totalPrice
-          });
-
-          renderApp();
+        const toppingsDiv = document.getElementById(`toppings-${itemId}`);
+        // ถ้ายังไม่เปิด เลือกให้เปิดก่อน
+        if (toppingsDiv && toppingsDiv.classList.contains("hidden")) {
+          toppingsDiv.classList.remove("hidden");
+          return;
         }
+
+        // ถ้าเปิดแล้ว แสดงว่าเป็นรอบที่ 2: เก็บท็อปปิ้ง แล้วเพิ่มออเดอร์
+        const selectedToppings = [];
+        item.toppings.forEach((topping, idx) => {
+          const checkbox = document.getElementById(`topping-${item.id}-${idx}`);
+          if (checkbox && checkbox.checked) {
+            selectedToppings.push(topping);
+          }
+        });
+        const totalPrice = item.basePrice + selectedToppings.reduce((sum, t) => sum + t.price, 0);
+
+        orderItems.push({
+          id: item.id,
+          name: item.name,
+          selectedToppings,
+          totalPrice
+        });
+        renderApp();
       } else {
+        // เมนูธรรมดา
         orderItems.push({
           id: item.id,
           name: item.name,
           totalPrice: item.price
         });
-
         renderApp();
       }
     };
@@ -683,12 +616,8 @@
       selectedPaymentAmount = null;
       selectedChangeAmount = null;
       gameResult = null;
-
-      const modal = document.getElementById('paymentModal');
-      if (modal) {
-        modal.remove();
-      }
-
+      const modal = document.getElementById("paymentModal");
+      if (modal) modal.remove();
       renderApp();
     };
 
@@ -696,21 +625,15 @@
       selectedPaymentAmount = amount;
       selectedChangeAmount = null;
       gameResult = null;
-
-      const modal = document.getElementById('paymentModal');
-      if (modal) {
-        modal.remove();
-      }
+      const modal = document.getElementById("paymentModal");
+      if (modal) modal.remove();
       renderPaymentModal();
     };
 
     window.selectChange = function(amount) {
       selectedChangeAmount = amount;
-
-      const modal = document.getElementById('paymentModal');
-      if (modal) {
-        modal.remove();
-      }
+      const modal = document.getElementById("paymentModal");
+      if (modal) modal.remove();
       renderPaymentModal();
     };
 
@@ -732,10 +655,8 @@
         };
       }
 
-      const modal = document.getElementById('paymentModal');
-      if (modal) {
-        modal.remove();
-      }
+      const modal = document.getElementById("paymentModal");
+      if (modal) modal.remove();
       renderPaymentModal();
 
       if (gameResult.correct) {
@@ -745,8 +666,7 @@
       }
     };
 
-    // Initialize
-    config = { ...defaultConfig };
+    // ----------------- เริ่มต้น -----------------
     renderApp();
   </script>
 </body>
