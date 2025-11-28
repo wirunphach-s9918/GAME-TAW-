@@ -1,11 +1,10 @@
-<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>เกมร้านอาหาร & เกมคำนวณเงินทอน</title>
+  <title>เกมร้านอาหาร Taw Cucina & เกมคำนวณเงินทอน</title>
 
-  <!-- สไตล์พื้นฐาน (ไม่มี Tailwind แล้ว) -->
+  <!-- สไตล์พื้นฐาน -->
   <style>
     * {
       box-sizing: border-box;
@@ -20,6 +19,52 @@
       color: #2c3e50;
     }
 
+    /* utility เล็ก ๆ แทน tailwind */
+    .w-full { width: 100%; }
+    .h-full { height: 100%; }
+    .max-w-md { max-width: 480px; }
+    .inline-block { display: inline-block; }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .mt-2 { margin-top: 0.5rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-4 { margin-top: 1rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .p-4 { padding: 1rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-8 { padding: 2rem; }
+    .shadow-lg { box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-row { flex-direction: row; }
+    .items-start { align-items: flex-start; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-4 { gap: 1rem; }
+    .border-top { border-top: 1px solid rgba(149,165,166,0.2); }
+    .border-bottom { border-bottom: 1px solid rgba(149,165,166,0.2); }
+    .rounded-full { border-radius: 999px; }
+    .min-h-32 { min-height: 8rem; }
+    .cursor-pointer { cursor: pointer; }
+    .hidden { display: none; }
+
     .category-card {
       transition: all 0.3s ease;
       border-radius: 16px;
@@ -27,35 +72,35 @@
       border: 2px solid transparent;
       background-color: #ffffff;
     }
-    
+
     .category-card:hover {
       transform: translateY(-4px);
     }
-    
+
     .menu-item {
       transition: all 0.2s ease;
       border-radius: 16px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.08);
       background-color: #ffffff;
     }
-    
+
     .menu-item:hover {
       transform: scale(1.02);
     }
-    
+
     .item-selected {
       border-width: 3px !important;
     }
-    
+
     .fade-in {
       animation: fadeIn 0.3s ease-in;
     }
-    
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
+
     .order-summary {
       position: sticky;
       top: 20px;
@@ -74,8 +119,6 @@
       padding: 16px;
       z-index: 1000;
     }
-
-    /* layout แบบง่ายแทน tailwind เดิม */
 
     .page-container {
       width: 100%;
@@ -128,59 +171,6 @@
       background-color: rgba(149,165,166,0.2);
       color: #2c3e50;
     }
-
-    .text-center { text-align: center; }
-    .mt-2 { margin-top: 0.5rem; }
-    .mt-3 { margin-top: 0.75rem; }
-    .mt-4 { margin-top: 1rem; }
-    .mb-1 { margin-bottom: 0.25rem; }
-    .mb-2 { margin-bottom: 0.5rem; }
-    .mb-3 { margin-bottom: 0.75rem; }
-    .mb-4 { margin-bottom: 1rem; }
-    .mb-6 { margin-bottom: 1.5rem; }
-    .mb-8 { margin-bottom: 2rem; }
-    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
-    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
-    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
-    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
-    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
-    .px-4 { padding-left: 1rem; padding-right: 1rem; }
-    .p-4 { padding: 1rem; }
-    .p-5 { padding: 1.25rem; }
-    .p-6 { padding: 1.5rem; }
-    .p-8 { padding: 2rem; }
-
-    .shadow-lg { box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
-
-    .flex { display: flex; }
-    .flex-col { flex-direction: column; }
-    .flex-row { flex-direction: row; }
-    .items-start { align-items: flex-start; }
-    .items-center { align-items: center; }
-    .justify-between { justify-content: space-between; }
-    .gap-2 { gap: 0.5rem; }
-    .gap-3 { gap: 0.75rem; }
-    .gap-4 { gap: 1rem; }
-
-    .text-right { text-align: right; }
-
-    .border-top {
-      border-top: 1px solid rgba(149,165,166,0.2);
-    }
-
-    .border-bottom {
-      border-bottom: 1px solid rgba(149,165,166,0.2);
-    }
-
-    .rounded-full { border-radius: 999px; }
-
-    .min-h-32 { min-height: 8rem; }
-
-    .w-full { width: 100%; }
-    .max-w-md { max-width: 480px; }
-
-    .cursor-pointer { cursor: pointer; }
   </style>
 
   <style>@view-transition { navigation: auto; }</style>
@@ -190,7 +180,7 @@
 
   <script>
     const defaultConfig = {
-      restaurant_name: "Bella Cucina",
+      restaurant_name: "Taw Cucina",
       tagline: "สร้างออเดอร์ของคุณเอง",
       category_1: "อาหารเรียกน้ำย่อย",
       category_2: "พาสต้า",
@@ -264,13 +254,10 @@
     function generateChangeOptions(payment, total) {
       const correctChange = payment - total;
       const options = [correctChange];
-      
       const diff1 = Math.floor(Math.random() * 15) + 5;
       const diff2 = Math.floor(Math.random() * 15) + 5;
-      
       options.push(correctChange + diff1);
       options.push(correctChange - diff2);
-      
       return options.sort(() => Math.random() - 0.5);
     }
 
@@ -278,23 +265,23 @@
       const app = document.getElementById('app');
       const customFont = config.font_family || defaultConfig.font_family;
       const baseSize = config.font_size || defaultConfig.font_size;
-      
+
       const bgColor = config.background_color || defaultConfig.background_color;
       const surfaceColor = config.surface_color || defaultConfig.surface_color;
       const textColor = config.text_color || defaultConfig.text_color;
       const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
       const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
-      
+
       const categoryKey1 = config.category_1 || defaultConfig.category_1;
       const categoryKey2 = config.category_2 || defaultConfig.category_2;
       const categoryKey3 = config.category_3 || defaultConfig.category_3;
-      
+
       const { subtotal, tax, total } = getTotal();
-      
+
       app.style.fontFamily = `${customFont}, system-ui, -apple-system, sans-serif`;
       app.style.backgroundColor = bgColor;
       app.style.color = textColor;
-      
+
       app.innerHTML = `
         <div class="page-container">
           <!-- Header -->
@@ -386,7 +373,7 @@
 
       renderMenuItems();
       renderOrderList();
-      
+
       if (showPaymentGame) {
         renderPaymentModal();
       }
@@ -395,13 +382,13 @@
     function renderMenuItems() {
       const menuItems = document.getElementById('menuItems');
       if (!menuItems) return;
-      
+
       const baseSize = config.font_size || defaultConfig.font_size;
       const surfaceColor = config.surface_color || defaultConfig.surface_color;
       const textColor = config.text_color || defaultConfig.text_color;
       const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
       const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
-      
+
       if (!selectedCategory) {
         menuItems.innerHTML = `
           <div class="text-center py-8" style="color: ${secondaryColor}">
@@ -411,9 +398,9 @@
         `;
         return;
       }
-      
+
       const items = menuData[selectedCategory] || [];
-      
+
       menuItems.innerHTML = items.map(item => {
         const isInOrder = orderItems.some(oi => oi.id === item.id);
         return `
@@ -457,11 +444,11 @@
     function renderOrderList() {
       const orderList = document.getElementById('orderList');
       if (!orderList) return;
-      
+
       const baseSize = config.font_size || defaultConfig.font_size;
       const textColor = config.text_color || defaultConfig.text_color;
       const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
-      
+
       if (orderItems.length === 0) {
         orderList.innerHTML = `
           <div class="text-center py-4" style="color: ${secondaryColor}">
@@ -475,7 +462,7 @@
                  ${item.selectedToppings.map(t => `• ${t.name} +฿${t.price}`).join('<br>')}
                </div>`
             : '';
-          
+
           return `
             <div class="flex justify-between items-start gap-2 pb-3 border-bottom">
               <div class="flex-grow">
@@ -502,18 +489,18 @@
       const textColor = config.text_color || defaultConfig.text_color;
       const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
       const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
-      
+
       const { total } = getTotal();
-      
+
       const modalDiv = document.createElement('div');
       modalDiv.className = 'modal-backdrop';
       modalDiv.id = 'paymentModal';
-      
+
       let changeOptions = [];
       if (selectedPaymentAmount) {
         changeOptions = generateChangeOptions(selectedPaymentAmount, total);
       }
-      
+
       modalDiv.innerHTML = `
         <div class="shadow-lg p-8 max-w-md w-full fade-in" 
              style="background-color: ${surfaceColor}; border-radius: 16px; max-height: 90%; overflow-y: auto;">
@@ -606,41 +593,39 @@
           </button>
         </div>
       `;
-      
+
       document.body.appendChild(modalDiv);
     }
 
     window.selectCategory = function(category) {
       selectedCategory = category;
-      
-      // ถ้าเปลี่ยนหมวด ให้ซ่อน toppings ทุกอันก่อน
+      // ซ่อน toppings ทุกอันเมื่อเปลี่ยนหมวด
       Object.keys(menuData).forEach(cat => {
         menuData[cat].forEach(item => {
           const el = document.getElementById(`toppings-${item.id}`);
           if (el) el.classList.add('hidden');
         });
       });
-
       renderApp();
     };
 
     window.toggleItem = function(itemId) {
       const existingItemIndex = orderItems.findIndex(oi => oi.id === itemId);
-      
+
       if (existingItemIndex >= 0) {
         orderItems.splice(existingItemIndex, 1);
         renderApp();
         return;
       }
-      
+
       let item;
       for (const category in menuData) {
         item = menuData[category].find(i => i.id === itemId);
         if (item) break;
       }
-      
+
       if (!item) return;
-      
+
       if (item.toppings) {
         const toppingsDiv = document.getElementById(`toppings-${item.id}`);
         if (toppingsDiv && toppingsDiv.classList.contains('hidden')) {
@@ -653,9 +638,9 @@
               selectedToppings.push(topping);
             }
           });
-          
+
           const totalPrice = item.basePrice + selectedToppings.reduce((sum, t) => sum + t.price, 0);
-          
+
           orderItems.push({
             id: item.id,
             name: item.name,
@@ -663,7 +648,7 @@
             selectedToppings: selectedToppings,
             totalPrice: totalPrice
           });
-          
+
           renderApp();
         }
       } else {
@@ -672,7 +657,7 @@
           name: item.name,
           totalPrice: item.price
         });
-        
+
         renderApp();
       }
     };
@@ -698,12 +683,12 @@
       selectedPaymentAmount = null;
       selectedChangeAmount = null;
       gameResult = null;
-      
+
       const modal = document.getElementById('paymentModal');
       if (modal) {
         modal.remove();
       }
-      
+
       renderApp();
     };
 
@@ -711,7 +696,7 @@
       selectedPaymentAmount = amount;
       selectedChangeAmount = null;
       gameResult = null;
-      
+
       const modal = document.getElementById('paymentModal');
       if (modal) {
         modal.remove();
@@ -721,7 +706,7 @@
 
     window.selectChange = function(amount) {
       selectedChangeAmount = amount;
-      
+
       const modal = document.getElementById('paymentModal');
       if (modal) {
         modal.remove();
@@ -733,7 +718,7 @@
       const { total } = getTotal();
       const correctChange = parseFloat((selectedPaymentAmount - total).toFixed(2));
       const selectedChange = parseFloat(selectedChangeAmount.toFixed(2));
-      
+
       if (Math.abs(selectedChange - correctChange) < 0.01) {
         stars++;
         gameResult = {
@@ -746,13 +731,13 @@
           message: `คำตอบที่ถูกต้องคือ ฿${correctChange.toFixed(2)}`
         };
       }
-      
+
       const modal = document.getElementById('paymentModal');
       if (modal) {
         modal.remove();
       }
       renderPaymentModal();
-      
+
       if (gameResult.correct) {
         setTimeout(() => {
           closePaymentGame();
