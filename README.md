@@ -1,26 +1,31 @@
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bella Cucina - Menu Builder</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>เกมร้านอาหาร & เกมคำนวณเงินทอน</title>
+
+  <!-- สไตล์พื้นฐาน (ไม่มี Tailwind แล้ว) -->
   <style>
-    body {
-      box-sizing: border-box;
-    }
-    
     * {
       box-sizing: border-box;
     }
-    
+
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: #f8f9fa;
+      color: #2c3e50;
     }
-    
+
     .category-card {
       transition: all 0.3s ease;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      border: 2px solid transparent;
+      background-color: #ffffff;
     }
     
     .category-card:hover {
@@ -29,6 +34,9 @@
     
     .menu-item {
       transition: all 0.2s ease;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      background-color: #ffffff;
     }
     
     .menu-item:hover {
@@ -36,7 +44,7 @@
     }
     
     .item-selected {
-      border-width: 3px;
+      border-width: 3px !important;
     }
     
     .fade-in {
@@ -66,7 +74,115 @@
       padding: 16px;
       z-index: 1000;
     }
+
+    /* layout แบบง่ายแทน tailwind เดิม */
+
+    .page-container {
+      width: 100%;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .max-width {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      gap: 2rem;
+    }
+
+    @media (min-width: 1024px) {
+      .grid-3 {
+        grid-template-columns: 2fr 1fr;
+      }
+      .grid-3-cols {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 1023px) {
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .grid-3-cols {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background-color: #e74c3c;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background-color: rgba(149,165,166,0.2);
+      color: #2c3e50;
+    }
+
+    .text-center { text-align: center; }
+    .mt-2 { margin-top: 0.5rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-4 { margin-top: 1rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .p-4 { padding: 1rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-8 { padding: 2rem; }
+
+    .shadow-lg { box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-row { flex-direction: row; }
+    .items-start { align-items: flex-start; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-4 { gap: 1rem; }
+
+    .text-right { text-align: right; }
+
+    .border-top {
+      border-top: 1px solid rgba(149,165,166,0.2);
+    }
+
+    .border-bottom {
+      border-bottom: 1px solid rgba(149,165,166,0.2);
+    }
+
+    .rounded-full { border-radius: 999px; }
+
+    .min-h-32 { min-height: 8rem; }
+
+    .w-full { width: 100%; }
+    .max-w-md { max-width: 480px; }
+
+    .cursor-pointer { cursor: pointer; }
   </style>
+
   <style>@view-transition { navigation: auto; }</style>
 </head>
 <body class="w-full h-full">
@@ -162,7 +278,6 @@
       const app = document.getElementById('app');
       const customFont = config.font_family || defaultConfig.font_family;
       const baseSize = config.font_size || defaultConfig.font_size;
-      const baseFontStack = 'system-ui, -apple-system, sans-serif';
       
       const bgColor = config.background_color || defaultConfig.background_color;
       const surfaceColor = config.surface_color || defaultConfig.surface_color;
@@ -176,92 +291,91 @@
       
       const { subtotal, tax, total } = getTotal();
       
-      app.style.fontFamily = `${customFont}, ${baseFontStack}`;
+      app.style.fontFamily = `${customFont}, system-ui, -apple-system, sans-serif`;
       app.style.backgroundColor = bgColor;
       app.style.color = textColor;
       
       app.innerHTML = `
-        <div class="w-full h-full" style="overflow-y: auto;">
-          <div class="w-full min-h-full px-4 py-8 md:px-8">
-            <!-- Header -->
-            <header class="text-center mb-12">
-              <h1 class="font-bold mb-2" style="font-size: ${baseSize * 2.5}px; color: ${textColor}">
-                ${config.restaurant_name || defaultConfig.restaurant_name}
-              </h1>
-              <p class="mb-1" style="font-size: ${baseSize * 1.2}px; color: ${secondaryColor}">
-                ${config.tagline || defaultConfig.tagline}
-              </p>
-              <div class="inline-block px-4 py-1 rounded-full mt-2" style="background-color: ${primaryColor}20; color: ${primaryColor}; font-size: ${baseSize * 0.9}px;">
-                ออนไลน์ • พร้อมรับออเดอร์
-              </div>
-            </header>
+        <div class="page-container">
+          <!-- Header -->
+          <header class="text-center mb-8">
+            <h1 class="font-bold mb-2" style="font-size: ${baseSize * 2.2}px; color: ${textColor}">
+              ${config.restaurant_name || defaultConfig.restaurant_name}
+            </h1>
+            <p class="mb-1" style="font-size: ${baseSize * 1.2}px; color: ${secondaryColor}">
+              ${config.tagline || defaultConfig.tagline}
+            </p>
+            <div class="inline-block px-4 py-1 rounded-full mt-2" 
+                 style="background-color: ${primaryColor}20; color: ${primaryColor}; font-size: ${baseSize * 0.9}px;">
+              ออนไลน์ • พร้อมรับออเดอร์
+            </div>
+          </header>
 
-            <div class="max-w-7xl mx-auto">
-              <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Menu Section -->
-                <div class="lg:col-span-2">
-                  <!-- Category Selection -->
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                    <button onclick="selectCategory('${categoryKey1}')" 
-                            class="category-card p-6 rounded-2xl shadow-md text-center cursor-pointer"
-                            style="background-color: ${surfaceColor}; border: 2px solid ${selectedCategory === categoryKey1 ? primaryColor : 'transparent'}">
-                      <div style="font-size: ${baseSize * 3}px;" class="mb-2">🍴</div>
-                      <h3 class="font-semibold" style="font-size: ${baseSize * 1.1}px; color: ${textColor}">${categoryKey1}</h3>
-                      <p style="font-size: ${baseSize * 0.85}px; color: ${secondaryColor}">฿8-12</p>
-                    </button>
-                    
-                    <button onclick="selectCategory('${categoryKey2}')" 
-                            class="category-card p-6 rounded-2xl shadow-md text-center cursor-pointer"
-                            style="background-color: ${surfaceColor}; border: 2px solid ${selectedCategory === categoryKey2 ? primaryColor : 'transparent'}">
-                      <div style="font-size: ${baseSize * 3}px;" class="mb-2">🍝</div>
-                      <h3 class="font-semibold" style="font-size: ${baseSize * 1.1}px; color: ${textColor}">${categoryKey2}</h3>
-                      <p style="font-size: ${baseSize * 0.85}px; color: ${secondaryColor}">฿14-18</p>
-                    </button>
-                    
-                    <button onclick="selectCategory('${categoryKey3}')" 
-                            class="category-card p-6 rounded-2xl shadow-md text-center cursor-pointer"
-                            style="background-color: ${surfaceColor}; border: 2px solid ${selectedCategory === categoryKey3 ? primaryColor : 'transparent'}">
-                      <div style="font-size: ${baseSize * 3}px;" class="mb-2">🍰</div>
-                      <h3 class="font-semibold" style="font-size: ${baseSize * 1.1}px; color: ${textColor}">${categoryKey3}</h3>
-                      <p style="font-size: ${baseSize * 0.85}px; color: ${secondaryColor}">฿6-9</p>
-                    </button>
-                  </div>
-
-                  <!-- Menu Items -->
-                  <div id="menuItems"></div>
+          <div class="max-width">
+            <div class="grid grid-3">
+              <!-- Menu Section -->
+              <div>
+                <!-- Category Selection -->
+                <div class="grid grid-3-cols mb-8 gap-4">
+                  <button onclick="selectCategory('${categoryKey1}')" 
+                          class="category-card p-6 text-center cursor-pointer"
+                          style="border-color: ${selectedCategory === categoryKey1 ? primaryColor : 'transparent'}">
+                    <div style="font-size: ${baseSize * 3}px;" class="mb-2">🍴</div>
+                    <h3 class="font-semibold" style="font-size: ${baseSize * 1.1}px; color: ${textColor}">${categoryKey1}</h3>
+                    <p style="font-size: ${baseSize * 0.85}px; color: ${secondaryColor}">฿8-12</p>
+                  </button>
+                  
+                  <button onclick="selectCategory('${categoryKey2}')" 
+                          class="category-card p-6 text-center cursor-pointer"
+                          style="border-color: ${selectedCategory === categoryKey2 ? primaryColor : 'transparent'}">
+                    <div style="font-size: ${baseSize * 3}px;" class="mb-2">🍝</div>
+                    <h3 class="font-semibold" style="font-size: ${baseSize * 1.1}px; color: ${textColor}">${categoryKey2}</h3>
+                    <p style="font-size: ${baseSize * 0.85}px; color: ${secondaryColor}">฿14-18</p>
+                  </button>
+                  
+                  <button onclick="selectCategory('${categoryKey3}')" 
+                          class="category-card p-6 text-center cursor-pointer"
+                          style="border-color: ${selectedCategory === categoryKey3 ? primaryColor : 'transparent'}">
+                    <div style="font-size: ${baseSize * 3}px;" class="mb-2">🍰</div>
+                    <h3 class="font-semibold" style="font-size: ${baseSize * 1.1}px; color: ${textColor}">${categoryKey3}</h3>
+                    <p style="font-size: ${baseSize * 0.85}px; color: ${secondaryColor}">฿6-9</p>
+                  </button>
                 </div>
 
-                <!-- Order Summary -->
-                <div class="lg:col-span-1">
-                  <div class="order-summary rounded-2xl shadow-lg p-6" style="background-color: ${surfaceColor}">
-                    <h2 class="font-bold mb-4" style="font-size: ${baseSize * 1.5}px; color: ${textColor}">ออเดอร์ของคุณ</h2>
-                    <div id="orderList" class="space-y-3 mb-6 min-h-32"></div>
-                    <div class="border-t pt-4" style="border-color: ${secondaryColor}40">
-                      <div class="flex justify-between items-center mb-2">
-                        <span style="font-size: ${baseSize}px; color: ${secondaryColor}">รวมย่อย</span>
-                        <span class="font-semibold" style="font-size: ${baseSize}px; color: ${textColor}">฿${subtotal.toFixed(2)}</span>
-                      </div>
-                      <div class="flex justify-between items-center mb-2">
-                        <span style="font-size: ${baseSize}px; color: ${secondaryColor}">ภาษี (8%)</span>
-                        <span class="font-semibold" style="font-size: ${baseSize}px; color: ${textColor}">฿${tax.toFixed(2)}</span>
-                      </div>
-                      <div class="flex justify-between items-center pt-2 border-t" style="border-color: ${secondaryColor}40">
-                        <span class="font-bold" style="font-size: ${baseSize * 1.2}px; color: ${textColor}">รวมทั้งหมด</span>
-                        <span class="font-bold" style="font-size: ${baseSize * 1.2}px; color: ${primaryColor}">฿${total.toFixed(2)}</span>
-                      </div>
-                      ${orderItems.length > 0 ? `
-                        <button onclick="startPaymentGame()" 
-                                class="w-full mt-4 py-3 rounded-xl font-semibold transition-all"
-                                style="background-color: ${primaryColor}; color: white; font-size: ${baseSize}px;">
-                          💰 ฝึกคำนวณเงินทอน
-                        </button>
-                        ${stars > 0 ? `
-                          <div class="text-center mt-3 py-2 rounded-lg" style="background-color: #ffd70020; font-size: ${baseSize}px; color: ${textColor}">
-                            ⭐ คุณได้ ${stars} ดาวแล้ว!
-                          </div>
-                        ` : ''}
-                      ` : ''}
+                <!-- Menu Items -->
+                <div id="menuItems"></div>
+              </div>
+
+              <!-- Order Summary -->
+              <div>
+                <div class="order-summary shadow-lg p-6" style="background-color: ${surfaceColor}; border-radius: 16px;">
+                  <h2 class="font-bold mb-4" style="font-size: ${baseSize * 1.5}px; color: ${textColor}">ออเดอร์ของคุณ</h2>
+                  <div id="orderList" class="mb-6 min-h-32"></div>
+                  <div class="border-top pt-4">
+                    <div class="flex justify-between items-center mb-2">
+                      <span style="font-size: ${baseSize}px; color: ${secondaryColor}">รวมย่อย</span>
+                      <span class="font-semibold" style="font-size: ${baseSize}px; color: ${textColor}">฿${subtotal.toFixed(2)}</span>
                     </div>
+                    <div class="flex justify-between items-center mb-2">
+                      <span style="font-size: ${baseSize}px; color: ${secondaryColor}">ภาษี (8%)</span>
+                      <span class="font-semibold" style="font-size: ${baseSize}px; color: ${textColor}">฿${tax.toFixed(2)}</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-2 border-top">
+                      <span class="font-bold" style="font-size: ${baseSize * 1.2}px; color: ${textColor}">รวมทั้งหมด</span>
+                      <span class="font-bold" style="font-size: ${baseSize * 1.2}px; color: ${primaryColor}">฿${total.toFixed(2)}</span>
+                    </div>
+                    ${orderItems.length > 0 ? `
+                      <button onclick="startPaymentGame()" 
+                              class="btn btn-primary w-full mt-4"
+                              style="font-size: ${baseSize}px;">
+                        💰 ฝึกคำนวณเงินทอน
+                      </button>
+                      ${stars > 0 ? `
+                        <div class="text-center mt-3 py-2" style="background-color: #ffd70020; border-radius: 8px; font-size: ${baseSize}px; color: ${textColor}">
+                          ⭐ คุณได้ ${stars} ดาวแล้ว!
+                        </div>
+                      ` : ''}
+                    ` : ''}
                   </div>
                 </div>
               </div>
@@ -290,7 +404,7 @@
       
       if (!selectedCategory) {
         menuItems.innerHTML = `
-          <div class="text-center py-12" style="color: ${secondaryColor}">
+          <div class="text-center py-8" style="color: ${secondaryColor}">
             <div style="font-size: ${baseSize * 4}px;" class="mb-4">👆</div>
             <p style="font-size: ${baseSize * 1.1}px;">เลือกหมวดหมู่เพื่อดูเมนู</p>
           </div>
@@ -303,11 +417,10 @@
       menuItems.innerHTML = items.map(item => {
         const isInOrder = orderItems.some(oi => oi.id === item.id);
         return `
-          <div class="menu-item rounded-xl shadow-md p-5 cursor-pointer mb-4 ${isInOrder ? 'item-selected' : ''}" 
-               style="background-color: ${surfaceColor}; border: 2px solid ${isInOrder ? primaryColor : 'transparent'}"
-               onclick="toggleItem(${item.id})">
+          <div class="menu-item p-5 cursor-pointer mb-4 ${isInOrder ? 'item-selected' : ''}" 
+               style="border: 2px solid ${isInOrder ? primaryColor : 'transparent'}; background-color: ${surfaceColor};">
             <div class="flex items-start gap-4">
-              <div class="text-center flex-shrink-0">
+              <div class="text-center" style="flex-shrink:0;">
                 <div style="font-size: ${baseSize * 3.5}px;" class="mb-1">${item.emoji}</div>
               </div>
               <div class="flex-grow">
@@ -321,14 +434,14 @@
                   ${item.description}
                 </p>
                 ${item.toppings ? `
-                  <div id="toppings-${item.id}" class="hidden mt-3 space-y-2 pt-3 border-t" style="border-color: ${secondaryColor}40">
+                  <div id="toppings-${item.id}" class="hidden mt-3" 
+                       style="border-top:1px solid ${secondaryColor}40; padding-top:0.75rem;">
                     <p class="font-semibold" style="font-size: ${baseSize * 0.9}px; color: ${textColor}">เลือกท็อปปิ้ง:</p>
                     ${item.toppings.map((topping, idx) => `
                       <label class="flex items-center gap-2 cursor-pointer" onclick="event.stopPropagation()">
                         <input type="checkbox" 
                                id="topping-${item.id}-${idx}"
-                               class="w-4 h-4 cursor-pointer" 
-                               style="accent-color: ${primaryColor}">
+                               class="w-4 h-4 cursor-pointer">
                         <span style="font-size: ${baseSize * 0.9}px; color: ${textColor}">${topping.name} (+฿${topping.price})</span>
                       </label>
                     `).join('')}
@@ -364,16 +477,16 @@
             : '';
           
           return `
-            <div class="flex justify-between items-start gap-2 pb-3 border-b" style="border-color: ${secondaryColor}20">
+            <div class="flex justify-between items-start gap-2 pb-3 border-bottom">
               <div class="flex-grow">
                 <div style="font-size: ${baseSize * 0.95}px; color: ${textColor}" class="font-medium">${item.name}</div>
                 ${toppingsText}
               </div>
-              <div class="text-right flex-shrink-0">
+              <div class="text-right" style="flex-shrink:0;">
                 <div style="font-size: ${baseSize * 0.95}px; color: ${textColor}" class="font-semibold">฿${item.totalPrice.toFixed(2)}</div>
                 <button onclick="removeItem(${item.id})" 
-                        class="mt-1 px-2 py-1 rounded" 
-                        style="font-size: ${baseSize * 0.75}px; background-color: ${secondaryColor}20; color: ${secondaryColor}">
+                        class="mt-1 px-2 py-1 btn-secondary" 
+                        style="border-radius:6px; font-size: ${baseSize * 0.75}px; border:none;">
                   ลบ
                 </button>
               </div>
@@ -402,7 +515,8 @@
       }
       
       modalDiv.innerHTML = `
-        <div class="rounded-2xl shadow-2xl p-8 max-w-md w-full fade-in" style="background-color: ${surfaceColor}; max-height: 90%; overflow-y: auto;">
+        <div class="shadow-lg p-8 max-w-md w-full fade-in" 
+             style="background-color: ${surfaceColor}; border-radius: 16px; max-height: 90%; overflow-y: auto;">
           <div class="text-center mb-6">
             <h2 class="font-bold mb-2" style="font-size: ${baseSize * 1.8}px; color: ${textColor}">
               🎮 เกมคำนวณเงินทอน
@@ -412,7 +526,8 @@
             </p>
           </div>
           
-          <div class="mb-6 p-4 rounded-xl text-center" style="background-color: ${primaryColor}20">
+          <div class="mb-6 p-4 text-center" 
+               style="background-color: ${primaryColor}20; border-radius: 12px;">
             <p style="font-size: ${baseSize * 0.9}px; color: ${secondaryColor}">
               ยอดที่ต้องจ่าย
             </p>
@@ -423,14 +538,17 @@
           
           <div class="mb-6">
             <p class="font-semibold mb-3" style="font-size: ${baseSize}px; color: ${textColor}">1️⃣ เลือกธนบัตรที่จ่าย:</p>
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid gap-3" style="grid-template-columns: repeat(3, minmax(0,1fr));">
               ${[20, 50, 100, 500, 1000].map(amount => `
                 <button onclick="selectPayment(${amount})" 
-                        class="py-3 px-2 rounded-lg font-bold transition-all"
-                        style="background-color: ${selectedPaymentAmount === amount ? primaryColor : secondaryColor + '40'}; 
-                               color: ${selectedPaymentAmount === amount ? 'white' : textColor}; 
-                               border: 2px solid ${selectedPaymentAmount === amount ? primaryColor : 'transparent'};
-                               font-size: ${baseSize * 0.95}px;">
+                        class="py-3 px-2 rounded-lg font-bold"
+                        style="
+                          background-color: ${selectedPaymentAmount === amount ? primaryColor : secondaryColor + '40'}; 
+                          color: ${selectedPaymentAmount === amount ? 'white' : textColor}; 
+                          border: 2px solid ${selectedPaymentAmount === amount ? primaryColor : 'transparent'};
+                          font-size: ${baseSize * 0.95}px;
+                          cursor:pointer;
+                        ">
                   ฿${amount}
                 </button>
               `).join('')}
@@ -440,14 +558,17 @@
           ${selectedPaymentAmount ? `
             <div class="mb-6">
               <p class="font-semibold mb-3" style="font-size: ${baseSize}px; color: ${textColor}">2️⃣ เงินทอนที่ถูกต้องคือ:</p>
-              <div class="grid grid-cols-3 gap-3">
+              <div class="grid gap-3" style="grid-template-columns: repeat(3, minmax(0,1fr));">
                 ${changeOptions.map(amount => `
                   <button onclick="selectChange(${amount})" 
-                          class="py-3 px-2 rounded-lg font-bold transition-all"
-                          style="background-color: ${selectedChangeAmount === amount ? primaryColor : secondaryColor + '40'}; 
-                                 color: ${selectedChangeAmount === amount ? 'white' : textColor}; 
-                                 border: 2px solid ${selectedChangeAmount === amount ? primaryColor : 'transparent'};
-                                 font-size: ${baseSize * 0.95}px;">
+                          class="py-3 px-2 rounded-lg font-bold"
+                          style="
+                            background-color: ${selectedChangeAmount === amount ? primaryColor : secondaryColor + '40'}; 
+                            color: ${selectedChangeAmount === amount ? 'white' : textColor}; 
+                            border: 2px solid ${selectedChangeAmount === amount ? primaryColor : 'transparent'};
+                            font-size: ${baseSize * 0.95}px;
+                            cursor:pointer;
+                          ">
                     ฿${amount.toFixed(2)}
                   </button>
                 `).join('')}
@@ -457,15 +578,17 @@
           
           ${selectedPaymentAmount && selectedChangeAmount !== null && !gameResult ? `
             <button onclick="checkAnswer()" 
-                    class="w-full py-3 rounded-xl font-semibold mb-3"
-                    style="background-color: ${primaryColor}; color: white; font-size: ${baseSize}px;">
+                    class="btn btn-primary w-full mb-3"
+                    style="font-size: ${baseSize}px;">
               ✓ ตรวจคำตอบ
             </button>
           ` : ''}
           
           ${gameResult ? `
-            <div class="text-center p-6 rounded-xl mb-4 fade-in" 
-                 style="background-color: ${gameResult.correct ? '#4caf5020' : '#f4433620'}; border: 2px solid ${gameResult.correct ? '#4caf50' : '#f44336'};">
+            <div class="text-center p-4 mb-4 fade-in" 
+                 style="background-color: ${gameResult.correct ? '#4caf5020' : '#f4433620'}; 
+                        border: 2px solid ${gameResult.correct ? '#4caf50' : '#f44336'};
+                        border-radius: 12px;">
               <div style="font-size: ${baseSize * 3}px;">${gameResult.correct ? '⭐' : '❌'}</div>
               <p class="font-bold mt-2" style="font-size: ${baseSize * 1.2}px; color: ${gameResult.correct ? '#4caf50' : '#f44336'};">
                 ${gameResult.correct ? 'ถูกต้อง! คุณได้ 1 ดาว' : 'ผิดนะ! ลองใหม่อีกครั้ง'}
@@ -477,7 +600,7 @@
           ` : ''}
           
           <button onclick="closePaymentGame()" 
-                  class="w-full py-3 rounded-xl font-semibold"
+                  class="btn w-full"
                   style="background-color: ${secondaryColor}40; color: ${textColor}; font-size: ${baseSize * 0.9}px;">
             ${gameResult && gameResult.correct ? 'เริ่มเกมใหม่' : 'ปิด'}
           </button>
@@ -489,6 +612,15 @@
 
     window.selectCategory = function(category) {
       selectedCategory = category;
+      
+      // ถ้าเปลี่ยนหมวด ให้ซ่อน toppings ทุกอันก่อน
+      Object.keys(menuData).forEach(cat => {
+        menuData[cat].forEach(item => {
+          const el = document.getElementById(`toppings-${item.id}`);
+          if (el) el.classList.add('hidden');
+        });
+      });
+
       renderApp();
     };
 
@@ -510,13 +642,13 @@
       if (!item) return;
       
       if (item.toppings) {
-        const toppingsDiv = document.getElementById(`toppings-${itemId}`);
+        const toppingsDiv = document.getElementById(`toppings-${item.id}`);
         if (toppingsDiv && toppingsDiv.classList.contains('hidden')) {
           toppingsDiv.classList.remove('hidden');
         } else if (toppingsDiv) {
           const selectedToppings = [];
           item.toppings.forEach((topping, idx) => {
-            const checkbox = document.getElementById(`topping-${itemId}-${idx}`);
+            const checkbox = document.getElementById(`topping-${item.id}-${idx}`);
             if (checkbox && checkbox.checked) {
               selectedToppings.push(topping);
             }
